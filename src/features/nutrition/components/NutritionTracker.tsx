@@ -7,7 +7,7 @@ import FoodSearch from './FoodSearch';
 export default function NutritionTracker() {
     const [selectedFoods, setSelectedFoods] = useState<{ name: string; unit: string; amount: number; calories: number; protein: number; fat: number; carbs: number; }[]>([]);
     const [selectedFood, setSelectedFood] = useState<typeof foodList[0] | null>(null);
-    const [amount, setAmount] = useState<number>(0);
+    const [amount, setAmount] = useState<string>('');
     const [total, setTotal] = useState<{
         calories: number;
         protein: number;
@@ -15,16 +15,20 @@ export default function NutritionTracker() {
         carbs: number;
     } | null>(null);
     const handleAdd = () => {
-        if (!selectedFood || amount <= 0) return;
+        const parsedAmount = parseFloat(amount);
+        if (!selectedFood || isNaN(parsedAmount) || parsedAmount <= 0) return;
 
-        // ✨ 기준 단위에 따라 곱하기
-        const multiplier = selectedFood.unit === '100g' ? amount * 100 / 100 : amount;
+        const multiplier =
+            selectedFood.unit === '100g' ? parsedAmount * 100 / 100 : parsedAmount;
 
         const newFood = {
             name: selectedFood.name,
             unit: selectedFood.unit,
-            amount,
-            displayAmount: selectedFood.unit === '100g' ? `${amount * 100}g` : `${amount}개`,
+            amount: parsedAmount,
+            displayAmount:
+                selectedFood.unit === '100g'
+                    ? `${parsedAmount * 100}g`
+                    : `${parsedAmount}개`,
             calories: selectedFood.calories * multiplier,
             protein: selectedFood.protein * multiplier,
             fat: selectedFood.fat * multiplier,
@@ -33,7 +37,7 @@ export default function NutritionTracker() {
 
         setSelectedFoods((prev) => [...prev, newFood]);
         setSelectedFood(null);
-        setAmount(0);
+        setAmount('');
     };
 
     const calculateTotal = () => {
@@ -63,7 +67,7 @@ export default function NutritionTracker() {
                         inputMode="numeric"      // 🔥 모바일 키패드도 숫자 전용으로
                         placeholder={`섭취량 (${selectedFood.unit})`}
                         value={amount}
-                        onChange={(e) => setAmount(Number(e.target.value))}
+                        onChange={(e) => setAmount(e.target.value)}
                         className="mt-2 p-2 border rounded w-full appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <button
