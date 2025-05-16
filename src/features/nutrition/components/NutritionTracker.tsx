@@ -5,7 +5,7 @@ import { foodList } from '../data/foodList';
 import FoodSearch from './FoodSearch';
 
 export default function NutritionTracker() {
-    const [selectedFoods, setSelectedFoods] = useState<{ name: string; unit: string; amount: number; calories: number; protein: number; fat: number; carbs: number; }[]>([]);
+    const [selectedFoods, setSelectedFoods] = useState<{ name: string; unit: string; amount: number; calories: number; protein: number; fat: number; carbs: number; displayAmount: string; }[]>([]);
     const [selectedFood, setSelectedFood] = useState<typeof foodList[0] | null>(null);
     const [amount, setAmount] = useState<string>('');
     const [total, setTotal] = useState<{
@@ -82,7 +82,7 @@ export default function NutritionTracker() {
             <ul>
                 {selectedFoods.map((item, idx) => (
                     <li key={idx} className="mb-2 p-2 border rounded">
-                        <strong>{item.name}</strong> - {item.amount}{item.unit}
+                        <strong>{item.name}</strong> - {item.displayAmount}
                         <div className="text-sm text-gray-500">
                             칼로리: {item.calories.toFixed(1)} kcal / 단백질: {item.protein.toFixed(1)}g / 지방: {item.fat.toFixed(1)}g / 탄수화물: {item.carbs.toFixed(1)}g
                         </div>
