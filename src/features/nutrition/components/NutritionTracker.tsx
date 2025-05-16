@@ -41,10 +41,11 @@ export default function NutritionTracker() {
                     <p>기준량: {selectedFood.unit}</p>
                     <input
                         type="number"
+                        inputMode="numeric"      // 🔥 모바일 키패드도 숫자 전용으로
                         placeholder={`섭취량 (${selectedFood.unit})`}
                         value={amount}
                         onChange={(e) => setAmount(Number(e.target.value))}
-                        className="mt-2 p-2 border rounded w-full"
+                        className="mt-2 p-2 border rounded w-full appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <button
                         onClick={handleAdd}
