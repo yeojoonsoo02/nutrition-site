@@ -14,6 +14,7 @@ export default function NutritionTracker() {
         fat: number;
         carbs: number;
     } | null>(null);
+
     const handleAdd = () => {
         const parsedAmount = parseFloat(amount);
         if (!selectedFood || isNaN(parsedAmount) || parsedAmount <= 0) return;
@@ -54,6 +55,10 @@ export default function NutritionTracker() {
         setTotal(total);
     };
 
+    const handleDelete = (index: number) => {
+        setSelectedFoods((prev) => prev.filter((_, i) => i !== index));
+    };
+
     return (
         <div className="text-left">
             <FoodSearch onSelect={(food) => setSelectedFood(food)} />
@@ -81,11 +86,20 @@ export default function NutritionTracker() {
 
             <ul>
                 {selectedFoods.map((item, idx) => (
-                    <li key={idx} className="mb-2 p-2 border rounded">
-                        <strong>{item.name}</strong> - {item.displayAmount}
-                        <div className="text-sm text-gray-500">
-                            칼로리: {item.calories.toFixed(1)} kcal / 단백질: {item.protein.toFixed(1)}g / 지방: {item.fat.toFixed(1)}g / 탄수화물: {item.carbs.toFixed(1)}g
+                    <li key={idx} className="mb-2 p-2 border rounded flex justify-between items-start">
+                        <div>
+                            <strong>{item.name}</strong> - {item.displayAmount}
+                            <div className="text-sm text-gray-500">
+                                칼로리: {item.calories.toFixed(1)} kcal / 단백질: {item.protein.toFixed(1)}g / 지방: {item.fat.toFixed(1)}g / 탄수화물: {item.carbs.toFixed(1)}g
+                            </div>
                         </div>
+                        <button
+                            onClick={() => handleDelete(idx)}
+                            className="text-red-500 text-sm hover:underline ml-4"
+                            title="삭제"
+                        >
+                            ❌
+                        </button>
                     </li>
                 ))}
             </ul>
