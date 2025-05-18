@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { foodList } from '../data/foodList';
 import FoodSearch from './FoodSearch';
 
@@ -28,6 +28,26 @@ export default function NutritionTracker() {
         carbs: number;
     } | null>(null);
 
+    // ✅ 자동 총합 계산
+    useEffect(() => {
+        if (selectedFoods.length === 0) {
+            setTotal(null);
+            return;
+        }
+
+        const newTotal = selectedFoods.reduce(
+            (acc, item) => ({
+                calories: acc.calories + item.calories,
+                protein: acc.protein + item.protein,
+                fat: acc.fat + item.fat,
+                carbs: acc.carbs + item.carbs,
+            }),
+            { calories: 0, protein: 0, fat: 0, carbs: 0 }
+        );
+
+        setTotal(newTotal);
+    }, [selectedFoods]);
+
     const handleSelect = (food: typeof foodList[0]) => {
         const amount = 1;
         const multiplier = food.unit === '100g' ? amount * 100 / 100 : amount;
@@ -54,34 +74,22 @@ export default function NutritionTracker() {
         setSelectedFoods((prev) => {
             const updated = [...prev];
             const target = updated[index];
-            const newAmount = Math.max(1, target.amount + delta); // 최소 1
+            const newAmount = Math.max(1, target.amount + delta);
+            const baseFood = foodList.find(f => f.name === target.name)!;
             const multiplier = target.unit === '100g' ? newAmount * 100 / 100 : newAmount;
 
             updated[index] = {
                 ...target,
                 amount: newAmount,
                 displayAmount: getDisplayAmount(target.unit, newAmount),
-                calories: foodList.find(f => f.name === target.name)!.calories * multiplier,
-                protein: foodList.find(f => f.name === target.name)!.protein * multiplier,
-                fat: foodList.find(f => f.name === target.name)!.fat * multiplier,
-                carbs: foodList.find(f => f.name === target.name)!.carbs * multiplier,
+                calories: baseFood.calories * multiplier,
+                protein: baseFood.protein * multiplier,
+                fat: baseFood.fat * multiplier,
+                carbs: baseFood.carbs * multiplier,
             };
+
             return updated;
         });
-    };
-
-    const calculateTotal = () => {
-        const total = selectedFoods.reduce(
-            (acc, item) => ({
-                calories: acc.calories + item.calories,
-                protein: acc.protein + item.protein,
-                fat: acc.fat + item.fat,
-                carbs: acc.carbs + item.carbs,
-            }),
-            { calories: 0, protein: 0, fat: 0, carbs: 0 }
-        );
-
-        setTotal(total);
     };
 
     return (
@@ -126,24 +134,13 @@ export default function NutritionTracker() {
                 ))}
             </ul>
 
-            {selectedFoods.length > 0 && (
-                <div className="mt-4 text-center">
-                    <button
-                        onClick={calculateTotal}
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    >
-                        총합 계산
-                    </button>
-
-                    {total && (
-                        <div className="mt-4 border rounded p-4 text-left">
-                            <h3 className="text-lg font-bold mb-2">🍽 총 섭취 영양소</h3>
-                            <p>칼로리: {total.calories.toFixed(1)} kcal</p>
-                            <p>단백질: {total.protein.toFixed(1)} g</p>
-                            <p>지방: {total.fat.toFixed(1)} g</p>
-                            <p>탄수화물: {total.carbs.toFixed(1)} g</p>
-                        </div>
-                    )}
+            {total && (
+                <div className="mt-4 border rounded p-4 text-left">
+                    <h3 className="text-lg font-bold mb-2">🍽 총 섭취 영양소</h3>
+                    <p>칼로리: {total.calories.toFixed(1)} kcal</p>
+                    <p>단백질: {total.protein.toFixed(1)} g</p>
+                    <p>지방: {total.fat.toFixed(1)} g</p>
+                    <p>탄수화물: {total.carbs.toFixed(1)} g</p>
                 </div>
             )}
         </div>
