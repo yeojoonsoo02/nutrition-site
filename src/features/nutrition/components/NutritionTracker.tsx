@@ -101,7 +101,7 @@ export default function NutritionTracker() {
             carbs: food.carbs * multiplier,
         };
 
-        setSelectedFoods((prev) => [...prev, newFood]);
+        setSelectedFoods((prev) => [newFood, ...prev]);
     };
 
     const handleDelete = (index: number) => {
@@ -139,7 +139,7 @@ export default function NutritionTracker() {
     };
 
     return (
-        <div className="text-left">
+        <div className="text-left dark:text-white">
             <div className="mb-4">
                 <label className="block mb-1 font-medium">날짜 선택</label>
                 <DatePicker
@@ -148,7 +148,7 @@ export default function NutritionTracker() {
                         if (date) setSelectedDate(date);
                     }}
                     dateFormat="yyyy-MM-dd"
-                    className="border rounded p-2 w-full"
+                    className="border rounded p-2 w-full dark:bg-gray-800 dark:text-white"
                 />
             </div>
 
@@ -156,11 +156,11 @@ export default function NutritionTracker() {
 
             <ul>
                 {selectedFoods.map((item, idx) => (
-                    <li key={idx} className="mb-2 p-2 border rounded">
+                    <li key={idx} className="mb-2 p-2 border rounded dark:border-gray-600 dark:bg-gray-800">
                         <div className="flex justify-between items-start">
                             <div>
                                 <strong>{item.name}</strong> - {item.displayAmount}
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm text-gray-500 dark:text-gray-300">
                                     칼로리: {item.calories.toFixed(1)} kcal / 단백질: {item.protein.toFixed(1)}g / 지방: {item.fat.toFixed(1)}g / 탄수화물: {item.carbs.toFixed(1)}g
                                 </div>
                             </div>
@@ -175,8 +175,8 @@ export default function NutritionTracker() {
 
                         <div className="flex items-center gap-2 mt-2 flex-wrap">
                             <div className="flex items-center gap-1">
-                                <button onClick={() => handleQuantityChange(idx, -1)} className="px-2 py-1 bg-gray-300 rounded hover:bg-gray-400 text-black">-1</button>
-                                <button onClick={() => handleQuantityChange(idx, -0.1)} className="px-2 py-1 bg-gray-300 rounded hover:bg-gray-400 text-black">-0.1</button>
+                                <button onClick={() => handleQuantityChange(idx, -1)} className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 text-black dark:text-white">-1</button>
+                                <button onClick={() => handleQuantityChange(idx, -0.1)} className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 text-black dark:text-white">-0.1</button>
                             </div>
 
                             {editingIndex === idx ? (
@@ -190,11 +190,11 @@ export default function NutritionTracker() {
                                         if (e.key === 'Enter') handleEditSubmit(idx);
                                     }}
                                     autoFocus
-                                    className="w-16 px-2 py-1 border rounded text-center"
+                                    className="w-16 px-2 py-1 border rounded text-center dark:bg-gray-700 dark:text-white appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                                 />
                             ) : (
                                 <span
-                                    className="w-14 text-center cursor-pointer border px-2 py-1 rounded bg-white"
+                                    className="w-14 text-center cursor-pointer border px-2 py-1 rounded bg-white dark:bg-gray-700 dark:text-white"
                                     onClick={() => {
                                         setEditingIndex(idx);
                                         setEditValue(String(item.amount));
@@ -205,8 +205,8 @@ export default function NutritionTracker() {
                             )}
 
                             <div className="flex items-center gap-1">
-                                <button onClick={() => handleQuantityChange(idx, 0.1)} className="px-2 py-1 bg-gray-300 rounded hover:bg-gray-400 text-black">+0.1</button>
-                                <button onClick={() => handleQuantityChange(idx, 1)} className="px-2 py-1 bg-gray-300 rounded hover:bg-gray-400 text-black">+1</button>
+                                <button onClick={() => handleQuantityChange(idx, 0.1)} className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 text-black dark:text-white">+0.1</button>
+                                <button onClick={() => handleQuantityChange(idx, 1)} className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 text-black dark:text-white">+1</button>
                             </div>
                         </div>
                     </li>
@@ -214,7 +214,7 @@ export default function NutritionTracker() {
             </ul>
 
             {total && (
-                <div className="mt-4 border rounded p-4 text-left">
+                <div className="mt-4 border rounded p-4 text-left dark:border-gray-600 dark:bg-gray-800">
                     <h3 className="text-lg font-bold mb-2">🍽 총 섭취 영양소</h3>
                     <p>칼로리: {total.calories.toFixed(1)} kcal</p>
                     <p>단백질: {total.protein.toFixed(1)} g</p>
