@@ -10,9 +10,11 @@ type FoodSearchProps = {
 export default function FoodSearch({ onSelect }: FoodSearchProps) {
   const [query, setQuery] = useState('');
 
-  const filtered = foodList.filter((food) =>
-    food.name.toLowerCase().includes(query.trim().toLowerCase())
-  );
+  const filtered = query.trim()
+    ? foodList.filter((food) =>
+        food.name.toLowerCase().includes(query.trim().toLowerCase())
+      )
+    : [];
 
   const handleSelect = (food: typeof foodList[0]) => {
     onSelect(food);
@@ -28,9 +30,9 @@ export default function FoodSearch({ onSelect }: FoodSearchProps) {
         onChange={(e) => setQuery(e.target.value)}
         className="w-full p-2 border rounded mb-2"
       />
-      <ul className="border rounded max-h-60 overflow-y-auto">
-        {filtered.length > 0 ? (
-          filtered.map((food) => (
+      {filtered.length > 0 && (
+        <ul className="border rounded max-h-60 overflow-y-auto">
+          {filtered.map((food) => (
             <li
               key={food.name}
               onClick={() => handleSelect(food)}
@@ -38,11 +40,9 @@ export default function FoodSearch({ onSelect }: FoodSearchProps) {
             >
               {food.name}
             </li>
-          ))
-        ) : (
-          <li className="p-2 text-gray-400">검색 결과가 없습니다</li>
-        )}
-      </ul>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
