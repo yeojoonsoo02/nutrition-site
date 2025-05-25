@@ -177,6 +177,11 @@ export default function NutritionTracker() {
                         </div>
 
                         <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex items-center gap-1">
+                                <button onClick={() => handleQuantityChange(idx, -1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">-1</button>
+                                <button onClick={() => handleQuantityChange(idx, -0.1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">-0.1</button>
+                            </div>
+
                             {editingIndex === idx && !isSaved ? (
                                 <>
                                     <input
@@ -184,6 +189,10 @@ export default function NutritionTracker() {
                                         step="0.1"
                                         value={editValue}
                                         onChange={(e) => setEditValue(e.target.value)}
+                                        onBlur={() => handleEditSubmit(idx)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleEditSubmit(idx);
+                                        }}
                                         className="w-20 px-2 py-1 border rounded-lg text-center dark:bg-gray-800 dark:text-white focus:border-blue-500 transition appearance-none"
                                         autoFocus
                                     />
@@ -201,16 +210,19 @@ export default function NutritionTracker() {
                                     </button>
                                 </>
                             ) : (
-                                <>
-                                    <span
-                                        className="w-16 text-center cursor-pointer border px-2 py-1 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-white hover:bg-blue-50 dark:hover:bg-blue-900 transition"
-                                        onClick={() => { if (!isSaved) { setEditingIndex(idx); setEditValue(String(item.amount)); } }}
-                                        style={{ pointerEvents: isSaved ? 'none' : 'auto' }}
-                                    >
-                                        {item.amount}
-                                    </span>
-                                </>
+                                <span
+                                    className="w-16 text-center cursor-pointer border px-2 py-1 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-white hover:bg-blue-50 dark:hover:bg-blue-900 transition"
+                                    onClick={() => { if (!isSaved) { setEditingIndex(idx); setEditValue(String(item.amount)); } }}
+                                    style={{ pointerEvents: isSaved ? 'none' : 'auto' }}
+                                >
+                                    {item.amount}
+                                </span>
                             )}
+
+                            <div className="flex items-center gap-1">
+                                <button onClick={() => handleQuantityChange(idx, 0.1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">+0.1</button>
+                                <button onClick={() => handleQuantityChange(idx, 1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">+1</button>
+                            </div>
                         </div>
                     </li>
                 ))}
