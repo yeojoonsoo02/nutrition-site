@@ -108,30 +108,32 @@ export default function NutritionTracker() {
         setSelectedFoods((prev) => prev.filter((_, i) => i !== index));
     };
 
+    const handleQuantityChange = (index: number, delta: number) => {
+        setSelectedFoods((prev) => {
+            const updated = [...prev];
+            const target = updated[index];
+            const newAmount = Math.max(0.1, parseFloat((target.amount + delta).toFixed(1)));
+            const baseFood = foodList.find(f => f.name === target.name)!;
+            const multiplier = target.unit === '100g' ? newAmount * 100 / 100 : newAmount;
+
+            updated[index] = {
+                ...target,
+                amount: newAmount,
+                displayAmount: getDisplayAmount(target.unit, newAmount),
+                calories: baseFood.calories * multiplier,
+                protein: baseFood.protein * multiplier,
+                fat: baseFood.fat * multiplier,
+                carbs: baseFood.carbs * multiplier,
+            };
+
+            return updated;
+        });
+    };
+
     const handleEditSubmit = (index: number) => {
         const value = parseFloat(editValue);
         if (isNaN(value) || value <= 0) return;
-
-        const target = selectedFoods[index];
-        const baseFood = foodList.find(f => f.name === target.name)!;
-        const multiplier = target.unit === '100g' ? value * 100 / 100 : value;
-
-        const updatedFood: SelectedFood = {
-            ...target,
-            amount: value,
-            displayAmount: getDisplayAmount(target.unit, value),
-            calories: baseFood.calories * multiplier,
-            protein: baseFood.protein * multiplier,
-            fat: baseFood.fat * multiplier,
-            carbs: baseFood.carbs * multiplier,
-        };
-
-        setSelectedFoods((prev) => {
-            const updated = [...prev];
-            updated[index] = updatedFood;
-            return updated;
-        });
-
+        handleQuantityChange(index, value - selectedFoods[index].amount);
         setEditingIndex(null);
         setEditValue('');
     };
@@ -172,22 +174,24 @@ export default function NutritionTracker() {
                         </div>
 
                         <div className="flex items-center gap-2 mt-2 flex-wrap">
+                            <div className="flex items-center gap-1">
+                                <button onClick={() => handleQuantityChange(idx, -1)} className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 text-black dark:text-white">-1</button>
+                                <button onClick={() => handleQuantityChange(idx, -0.1)} className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 text-black dark:text-white">-0.1</button>
+                            </div>
+
                             {editingIndex === idx ? (
-                                <>
-                                    <input
-                                        type="number"
-                                        step="0.1"
-                                        value={editValue}
-                                        onChange={(e) => setEditValue(e.target.value)}
-                                        className="w-20 px-2 py-1 border rounded text-center dark:bg-gray-700 dark:text-white appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                                    />
-                                    <button
-                                        onClick={() => handleEditSubmit(idx)}
-                                        className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                                    >
-                                        확인
-                                    </button>
-                                </>
+                                <input
+                                    type="number"
+                                    step="0.1"
+                                    value={editValue}
+                                    onChange={(e) => setEditValue(e.target.value)}
+                                    onBlur={() => handleEditSubmit(idx)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') handleEditSubmit(idx);
+                                    }}
+                                    autoFocus
+                                    className="w-16 px-2 py-1 border rounded text-center dark:bg-gray-700 dark:text-white appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                />
                             ) : (
                                 <span
                                     className="w-14 text-center cursor-pointer border px-2 py-1 rounded bg-white dark:bg-gray-700 dark:text-white"
@@ -199,6 +203,11 @@ export default function NutritionTracker() {
                                     {item.amount}
                                 </span>
                             )}
+
+                            <div className="flex items-center gap-1">
+                                <button onClick={() => handleQuantityChange(idx, 0.1)} className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 text-black dark:text-white">+0.1</button>
+                                <button onClick={() => handleQuantityChange(idx, 1)} className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 text-black dark:text-white">+1</button>
+                            </div>
                         </div>
                     </li>
                 ))}
