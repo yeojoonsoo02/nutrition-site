@@ -35,7 +35,7 @@ export default function NutritionTracker() {
     } | null>(null);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [isSaved, setIsSaved] = useState(false);
-    const [viewOnly, setViewOnly] = useState(false);
+    const [viewOnly, setViewOnly] = useState(true);
     const [markedDates, setMarkedDates] = useState<string[]>([]);
 
     useEffect(() => {
@@ -209,43 +209,25 @@ export default function NutritionTracker() {
                         </div>
 
                         <div className="flex items-center gap-2 flex-wrap">
-                            {editingIndex === idx && !isSaved && !viewOnly ? (
+                            {viewOnly ? null : (
                                 <>
-                                    <input
-                                        type="number"
-                                        step="0.1"
-                                        value={editValue}
-                                        onChange={(e) => setEditValue(e.target.value)}
-                                        onBlur={() => handleEditSubmit(idx)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') handleEditSubmit(idx);
-                                        }}
-                                        className="w-20 px-2 py-1 border rounded-lg text-center dark:bg-gray-800 dark:text-white focus:border-blue-500 transition appearance-none"
-                                        autoFocus
-                                        style={{ MozAppearance: 'textfield' }}
-                                    />
-                                    <button
-                                        className="px-3 py-1 bg-primary text-white rounded-lg font-semibold hover:bg-primary-hover transition"
-                                        onClick={() => handleEditSubmit(idx)}
+                                    <div className="flex items-center gap-1">
+                                        <button onClick={() => handleQuantityChange(idx, -1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">-1</button>
+                                        <button onClick={() => handleQuantityChange(idx, -0.1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">-0.1</button>
+                                    </div>
+                                    <span
+                                        className="w-16 text-center border px-2 py-1 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-white select-none"
+                                        style={{ userSelect: 'none', pointerEvents: 'none' }}
                                     >
-                                        확인
-                                    </button>
-                                    <button
-                                        className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-                                        onClick={() => { setEditingIndex(null); setEditValue(''); }}
-                                    >
-                                        취소
-                                    </button>
+                                        {item.amount}
+                                    </span>
+                                    <div className="flex items-center gap-1">
+                                        <button onClick={() => handleQuantityChange(idx, 0.1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">+0.1</button>
+                                        <button onClick={() => handleQuantityChange(idx, 1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">+1</button>
+                                    </div>
                                 </>
-                            ) : (
-                                <span
-                                    className="w-16 text-center cursor-pointer border px-2 py-1 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-white hover:bg-blue-50 dark:hover:bg-blue-900 transition"
-                                    onClick={() => { if (!isSaved && !viewOnly) { setEditingIndex(idx); setEditValue(String(item.amount)); } }}
-                                    style={{ pointerEvents: isSaved || viewOnly ? 'none' : 'auto' }}
-                                >
-                                    {item.amount}
-                                </span>
                             )}
+                            {viewOnly && null}
                         </div>
                     </li>
                 ))}
