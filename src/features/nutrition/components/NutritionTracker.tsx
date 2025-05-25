@@ -25,8 +25,6 @@ function getDisplayAmount(unit: string, amount: number): string {
 
 export default function NutritionTracker() {
     const [selectedFoods, setSelectedFoods] = useState<SelectedFood[]>([]);
-    const [editingIndex, setEditingIndex] = useState<number | null>(null);
-    const [editValue, setEditValue] = useState('');
     const [total, setTotal] = useState<{
         calories: number;
         protein: number;
@@ -142,14 +140,6 @@ export default function NutritionTracker() {
 
             return updated;
         });
-    };
-
-    const handleEditSubmit = (index: number) => {
-        const value = parseFloat(editValue);
-        if (isNaN(value) || value <= 0) return;
-        handleQuantityChange(index, value - selectedFoods[index].amount);
-        setEditingIndex(null);
-        setEditValue('');
     };
 
     return (

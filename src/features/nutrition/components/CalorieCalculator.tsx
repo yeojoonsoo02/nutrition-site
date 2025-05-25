@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
@@ -10,6 +10,7 @@ export default function CalorieCalculator() {
     const [height, setHeight] = useState(170);
     const [weight, setWeight] = useState(65);
     const [exercise, setExercise] = useState(3);
+    const [viewOnly, setViewOnly] = useState(true);
 
     const [result, setResult] = useState<{
         bmr: number;
@@ -59,7 +60,7 @@ export default function CalorieCalculator() {
                 createdAt: new Date().toISOString(),
             });
             alert('✅ 하루 섭취량 계산 결과가 저장되었습니다!');
-        } catch (err) {
+        } catch {
             alert('❌ 저장 중 오류가 발생했습니다.');
         }
     };
@@ -76,19 +77,22 @@ export default function CalorieCalculator() {
         const [open, setOpen] = useState(false);
         const ref = useRef<HTMLDivElement>(null);
         const listRef = useRef<HTMLDivElement>(null);
-        const numbers: number[] = [];
-        for (let i = min; i <= max; i += step) numbers.push(i);
+        const numbers = useMemo(() => {
+            const arr: number[] = [];
+            for (let i = min; i <= max; i += step) arr.push(i);
+            return arr;
+        }, [min, max, step]);
 
         // open 시 선택된 값이 중앙에 오도록 스크롤
         useEffect(() => {
             if (open && listRef.current) {
                 const idx = numbers.indexOf(value);
                 if (idx !== -1) {
-                    const itemHeight = 40; // px, 아래 스타일에서 py-2(8px) + px-4 + font 등 고려
+                    const itemHeight = 40;
                     listRef.current.scrollTop = Math.max(0, itemHeight * idx - (listRef.current.clientHeight / 2) + (itemHeight / 2));
                 }
             }
-        }, [open, value, numbers]);
+        }, [open, value]);
 
         useEffect(() => {
             function handleClick(e: MouseEvent) {
@@ -135,87 +139,100 @@ export default function CalorieCalculator() {
 
     return (
         <div className="card text-left dark:text-white max-w-xl mx-auto">
+            {/* 정보만 보기/편집 모드 토글 */}
+            <div className="flex justify-end mb-4">
+                <button
+                    className={`px-4 py-2 rounded-lg font-semibold border transition text-sm ${viewOnly ? 'bg-primary text-white border-primary' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-white border-gray-300 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900'}`}
+                    onClick={() => setViewOnly(v => !v)}
+                >
+                    {viewOnly ? '편집 모드로' : '정보만 보기'}
+                </button>
+            </div>
             <h1 className="text-2xl font-bold mb-8 text-center">🔥 하루 섭취량 계산기</h1>
 
-            {/* 성별 선택 버튼 그룹 */}
-            <div className="flex justify-center gap-4 mb-6">
+            {/* 입력 폼: viewOnly가 아닐 때만 보임 */}
+            {!viewOnly && (
+                <>
+                <div className="flex justify-center gap-4 mb-6">
+                    <button
+                        type="button"
+                        onClick={() => setGender('male')}
+                        className={`flex-1 py-3 rounded-xl border font-semibold text-lg transition-all
+                            ${gender === 'male'
+                                ? 'bg-primary text-white border-primary shadow-lg translate-y-1 scale-95 ring-2 ring-primary/30'
+                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-white border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900'}
+                            focus:outline-none`}
+                        aria-pressed={gender === 'male'}
+                    >
+                        👨 남성
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setGender('female')}
+                        className={`flex-1 py-3 rounded-xl border font-semibold text-lg transition-all
+                            ${gender === 'female'
+                                ? 'bg-primary text-white border-primary shadow-lg translate-y-1 scale-95 ring-2 ring-primary/30'
+                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-white border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900'}
+                            focus:outline-none`}
+                        aria-pressed={gender === 'female'}
+                    >
+                        👩 여성
+                    </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                    <div>
+                        <label className="block mb-2 font-semibold">나이 <span className="text-gray-400 text-sm">(만 나이)</span></label>
+                        <NumberPicker
+                            value={age}
+                            setValue={setAge}
+                            min={1}
+                            max={120}
+                            placeholder="예: 25"
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-2 font-semibold">키 <span className="text-gray-400 text-sm">(cm)</span></label>
+                        <NumberPicker
+                            value={height}
+                            setValue={setHeight}
+                            min={100}
+                            max={250}
+                            placeholder="예: 170"
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-2 font-semibold">몸무게 <span className="text-gray-400 text-sm">(kg)</span></label>
+                        <NumberPicker
+                            value={weight}
+                            setValue={setWeight}
+                            min={20}
+                            max={200}
+                            placeholder="예: 65"
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-2 font-semibold">주간 운동 횟수 <span className="text-gray-400 text-sm">(0~7회)</span></label>
+                        <NumberPicker
+                            value={exercise}
+                            setValue={setExercise}
+                            min={0}
+                            max={7}
+                            placeholder="예: 3"
+                        />
+                    </div>
+                </div>
+
                 <button
-                    type="button"
-                    onClick={() => setGender('male')}
-                    className={`flex-1 py-3 rounded-xl border font-semibold text-lg transition-all
-                        ${gender === 'male'
-                            ? 'bg-primary text-white border-primary shadow-lg translate-y-1 scale-95 ring-2 ring-primary/30'
-                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-white border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900'}
-                        focus:outline-none`}
-                    aria-pressed={gender === 'male'}
+                    onClick={handleCalculate}
+                    className="w-full py-3 bg-primary text-white font-bold rounded-xl shadow hover:bg-primary-hover transition text-lg mb-2"
                 >
-                    👨 남성
+                    계산하기
                 </button>
-                <button
-                    type="button"
-                    onClick={() => setGender('female')}
-                    className={`flex-1 py-3 rounded-xl border font-semibold text-lg transition-all
-                        ${gender === 'female'
-                            ? 'bg-primary text-white border-primary shadow-lg translate-y-1 scale-95 ring-2 ring-primary/30'
-                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-white border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900'}
-                        focus:outline-none`}
-                    aria-pressed={gender === 'female'}
-                >
-                    👩 여성
-                </button>
-            </div>
+                </>
+            )}
 
-            {/* 입력 폼 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                <div>
-                    <label className="block mb-2 font-semibold">나이 <span className="text-gray-400 text-sm">(만 나이)</span></label>
-                    <NumberPicker
-                        value={age}
-                        setValue={setAge}
-                        min={1}
-                        max={120}
-                        placeholder="예: 25"
-                    />
-                </div>
-                <div>
-                    <label className="block mb-2 font-semibold">키 <span className="text-gray-400 text-sm">(cm)</span></label>
-                    <NumberPicker
-                        value={height}
-                        setValue={setHeight}
-                        min={100}
-                        max={250}
-                        placeholder="예: 170"
-                    />
-                </div>
-                <div>
-                    <label className="block mb-2 font-semibold">몸무게 <span className="text-gray-400 text-sm">(kg)</span></label>
-                    <NumberPicker
-                        value={weight}
-                        setValue={setWeight}
-                        min={20}
-                        max={200}
-                        placeholder="예: 65"
-                    />
-                </div>
-                <div>
-                    <label className="block mb-2 font-semibold">주간 운동 횟수 <span className="text-gray-400 text-sm">(0~7회)</span></label>
-                    <NumberPicker
-                        value={exercise}
-                        setValue={setExercise}
-                        min={0}
-                        max={7}
-                        placeholder="예: 3"
-                    />
-                </div>
-            </div>
-
-            <button
-                onClick={handleCalculate}
-                className="w-full py-3 bg-primary text-white font-bold rounded-xl shadow hover:bg-primary-hover transition text-lg mb-2"
-            >
-                계산하기
-            </button>
-
+            {/* 결과/저장 버튼은 항상 보임 */}
             {result && (
                 <>
                 <div className="mt-8 card border-0 bg-blue-50 dark:bg-blue-950 text-blue-900 dark:text-blue-200">
@@ -228,6 +245,7 @@ export default function CalorieCalculator() {
                         <div className="flex items-center gap-2"><span className="text-2xl">🍚</span> <b>권장 탄수화물:</b> {result.carbs.toFixed(1)} g</div>
                     </div>
                 </div>
+                {!viewOnly && (
                 <div className="mt-4 text-center">
                     <button
                         onClick={saveToFirestore}
@@ -236,6 +254,7 @@ export default function CalorieCalculator() {
                         💾 결과 저장
                     </button>
                 </div>
+                )}
                 </>
             )}
         </div>
