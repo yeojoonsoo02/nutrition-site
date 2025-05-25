@@ -113,8 +113,6 @@ export default function NutritionTracker() {
                     Math.abs(1 - rates[2]),
                     Math.abs(1 - rates[3])
                 );
-                // 평균 달성률(절대값)도 참고
-                const avgRate = rates.reduce((a, b) => a + b, 0) / 4;
                 // 색상 결정
                 let color = '';
                 if (rates.every(r => r >= 0.9 && r <= 1.1)) color = 'bg-green-500'; // 진한 초록
