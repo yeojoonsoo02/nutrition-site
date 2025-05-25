@@ -10,15 +10,19 @@ type FoodSearchProps = {
 export default function FoodSearch({ onSelect }: FoodSearchProps) {
   const [query, setQuery] = useState('');
 
-  const filtered = query.trim()
-    ? foodList.filter((food) =>
-        food.name.toLowerCase().includes(query.trim().toLowerCase())
-      )
-    : [];
+  const filtered = foodList.filter((food) =>
+    food.name.toLowerCase().includes(query.trim().toLowerCase())
+  );
 
   const handleSelect = (food: typeof foodList[0]) => {
     onSelect(food);
-    setQuery(''); // 👉 선택 후 입력 초기화
+    setQuery(''); // 선택 후 입력 초기화
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && filtered.length === 1) {
+      handleSelect(filtered[0]);
+    }
   };
 
   return (
@@ -28,11 +32,12 @@ export default function FoodSearch({ onSelect }: FoodSearchProps) {
         placeholder="음식 이름을 입력하세요"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={handleKeyDown}
         className="w-full p-2 border rounded mb-2"
       />
-      {filtered.length > 0 && (
-        <ul className="border rounded max-h-60 overflow-y-auto">
-          {filtered.map((food) => (
+      <ul className="border rounded max-h-60 overflow-y-auto">
+        {filtered.length > 0 ? (
+          filtered.map((food) => (
             <li
               key={food.name}
               onClick={() => handleSelect(food)}
@@ -40,9 +45,11 @@ export default function FoodSearch({ onSelect }: FoodSearchProps) {
             >
               {food.name}
             </li>
-          ))}
-        </ul>
-      )}
+          ))
+        ) : (
+          <li className="p-2 text-gray-400">검색 결과가 없습니다</li>
+        )}
+      </ul>
     </div>
   );
 }
