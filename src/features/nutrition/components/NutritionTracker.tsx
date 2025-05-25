@@ -252,19 +252,19 @@ export default function NutritionTracker() {
                             )}
                         </div>
 
-                        <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex items-center gap-2 flex-nowrap overflow-x-auto">
                             {viewOnly ? null : (
                                 <>
-                                    <button onClick={() => handleQuantityChange(idx, -1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">-1</button>
-                                    <button onClick={() => handleQuantityChange(idx, -0.1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">-0.1</button>
+                                    <button onClick={() => handleQuantityChange(idx, -1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition whitespace-nowrap">-1</button>
+                                    <button onClick={() => handleQuantityChange(idx, -0.1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition whitespace-nowrap">-0.1</button>
                                     <span
-                                        className="w-16 text-center border px-2 py-1 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-white select-none"
+                                        className="w-16 text-center border px-2 py-1 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-white select-none whitespace-nowrap"
                                         style={{ userSelect: 'none', pointerEvents: 'none' }}
                                     >
                                         {item.amount}
                                     </span>
-                                    <button onClick={() => handleQuantityChange(idx, 0.1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">+0.1</button>
-                                    <button onClick={() => handleQuantityChange(idx, 1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">+1</button>
+                                    <button onClick={() => handleQuantityChange(idx, 0.1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition whitespace-nowrap">+0.1</button>
+                                    <button onClick={() => handleQuantityChange(idx, 1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition whitespace-nowrap">+1</button>
                                 </>
                             )}
                         </div>
