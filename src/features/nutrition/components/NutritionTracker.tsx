@@ -5,7 +5,7 @@ import { foodList } from '../data/foodList';
 import FoodSearch from './FoodSearch';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 type SelectedFood = {
@@ -36,6 +36,7 @@ export default function NutritionTracker() {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [isSaved, setIsSaved] = useState(false);
     const [viewOnly, setViewOnly] = useState(false);
+    const [markedDates, setMarkedDates] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -73,6 +74,16 @@ export default function NutritionTracker() {
 
         setTotal(newTotal);
     }, [selectedFoods]);
+
+    // 기록이 있는 날짜 목록 불러오기
+    useEffect(() => {
+        async function fetchMarkedDates() {
+            const snapshot = await getDocs(collection(db, 'records'));
+            const dates = snapshot.docs.map(doc => doc.id); // doc.id가 yyyy-MM-dd
+            setMarkedDates(dates);
+        }
+        fetchMarkedDates();
+    }, []);
 
     const saveToFirestore = async () => {
         const dateKey = selectedDate.toISOString().split('T')[0];
@@ -165,6 +176,12 @@ export default function NutritionTracker() {
                     popperClassName="z-30"
                     showPopperArrow={false}
                     customInput={<input readOnly className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition cursor-pointer" />}
+                    dayClassName={date => {
+                        const ymd = date.toISOString().split('T')[0];
+                        return markedDates.includes(ymd)
+                            ? 'bg-blue-100 text-blue-700 font-bold rounded-full'
+                            : '';
+                    }}
                 />
             </div>
 
