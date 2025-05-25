@@ -34,7 +34,13 @@ export default function CalorieCalculator() {
         };
         const tdee = bmr * activityMap[Math.min(exercise, 4)];
 
-        const protein = 1.6 * weight;
+        // 운동량에 따라 단백질 배수 결정
+        let proteinFactor = 1.2;
+        if (exercise >= 6) proteinFactor = 2.2;
+        else if (exercise >= 4) proteinFactor = 2.0;
+        else if (exercise >= 2) proteinFactor = 1.6;
+        // 0~1은 1.2
+        const protein = proteinFactor * weight;
         const fat = (tdee * 0.25) / 9;
         const carbs = (tdee - (protein * 4 + fat * 9)) / 4;
 
@@ -259,6 +265,15 @@ export default function CalorieCalculator() {
             {result && (
                 <>
                 <div className="mt-8 card border-0 bg-blue-50 dark:bg-blue-950 text-blue-900 dark:text-blue-200">
+                    {/* 정보만 보기 모드일 때 개인 정보 표시 */}
+                    {viewOnly && (
+                        <div className="mb-4 flex flex-wrap gap-4 items-center justify-center text-base text-blue-900 dark:text-blue-200">
+                            <span>👤 <b>{gender === 'male' ? '남성' : '여성'}</b></span>
+                            <span>나이: <b>{age}</b>세</span>
+                            <span>키: <b>{height}</b>cm</span>
+                            <span>몸무게: <b>{weight}</b>kg</span>
+                        </div>
+                    )}
                     <h2 className="text-lg font-semibold mb-4 text-center">🧮 결과</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-base">
                         <div className="flex items-center gap-2"><span className="text-2xl">🔥</span> <b>기초대사량 (BMR):</b> {result.bmr.toFixed(0)} kcal</div>
