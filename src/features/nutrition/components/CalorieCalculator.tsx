@@ -121,7 +121,7 @@ export default function CalorieCalculator() {
                     listRef.current.scrollTop = Math.max(0, itemHeight * idx - (listRef.current.clientHeight / 2) + (itemHeight / 2));
                 }
             }
-        }, [open, value]);
+        }, [open, value, numbers]);
 
         useEffect(() => {
             function handleClick(e: MouseEvent) {

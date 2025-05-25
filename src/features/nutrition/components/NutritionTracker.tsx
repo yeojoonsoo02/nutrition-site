@@ -34,13 +34,6 @@ export default function NutritionTracker() {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [isSaved, setIsSaved] = useState(false);
     const [viewOnly, setViewOnly] = useState(true);
-    const [markedDates, setMarkedDates] = useState<string[]>([]);
-    const [recommended, setRecommended] = useState<{
-        calories: number;
-        protein: number;
-        fat: number;
-        carbs: number;
-    } | null>(null);
     const [dateColorMap, setDateColorMap] = useState<Record<string, string>>({});
 
     useEffect(() => {
@@ -94,13 +87,10 @@ export default function NutritionTracker() {
                     fat: d.fat,
                     carbs: d.carbs,
                 };
-                setRecommended(rec);
             }
             // 실제 기록
             const snapshot = await getDocs(collection(db, 'records'));
             const colorMap: Record<string, string> = {};
-            const dates = snapshot.docs.map(doc => doc.id);
-            setMarkedDates(dates);
             snapshot.docs.forEach(docSnap => {
                 const ymd = docSnap.id;
                 const data = docSnap.data();
