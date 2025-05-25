@@ -35,6 +35,13 @@ export default function NutritionTracker() {
     const [isSaved, setIsSaved] = useState(false);
     const [viewOnly, setViewOnly] = useState(true);
     const [markedDates, setMarkedDates] = useState<string[]>([]);
+    const [recommended, setRecommended] = useState<{
+        calories: number;
+        protein: number;
+        fat: number;
+        carbs: number;
+    } | null>(null);
+    const [dateColorMap, setDateColorMap] = useState<Record<string, string>>({});
 
     useEffect(() => {
         const fetchData = async () => {
@@ -73,14 +80,63 @@ export default function NutritionTracker() {
         setTotal(newTotal);
     }, [selectedFoods]);
 
-    // 기록이 있는 날짜 목록 불러오기
+    // 기록이 있는 날짜 목록 + 권장 섭취량 불러오기 및 색상 계산
     useEffect(() => {
-        async function fetchMarkedDates() {
+        async function fetchData() {
+            // 권장 섭취량
+            const recSnap = await getDoc(doc(db, 'calorieRecords', 'latest'));
+            let rec = null;
+            if (recSnap.exists()) {
+                const d = recSnap.data();
+                rec = {
+                    calories: d.tdee,
+                    protein: d.protein,
+                    fat: d.fat,
+                    carbs: d.carbs,
+                };
+                setRecommended(rec);
+            }
+            // 실제 기록
             const snapshot = await getDocs(collection(db, 'records'));
-            const dates = snapshot.docs.map(doc => doc.id); // doc.id가 yyyy-MM-dd
+            const colorMap: Record<string, string> = {};
+            const dates = snapshot.docs.map(doc => doc.id);
             setMarkedDates(dates);
+            snapshot.docs.forEach(docSnap => {
+                const ymd = docSnap.id;
+                const data = docSnap.data();
+                if (!rec) {
+                    colorMap[ymd] = 'bg-gray-200';
+                    return;
+                }
+                const total = data.total || {};
+                // 각 영양소별 달성률(%)
+                const rates = [
+                    total.calories && rec.calories ? total.calories / rec.calories : 0,
+                    total.protein && rec.protein ? total.protein / rec.protein : 0,
+                    total.fat && rec.fat ? total.fat / rec.fat : 0,
+                    total.carbs && rec.carbs ? total.carbs / rec.carbs : 0,
+                ];
+                // 가장 벗어난(나쁜) 달성률을 기준으로 색상 결정
+                const worst = Math.max(
+                    Math.abs(1 - rates[0]),
+                    Math.abs(1 - rates[1]),
+                    Math.abs(1 - rates[2]),
+                    Math.abs(1 - rates[3])
+                );
+                // 평균 달성률(절대값)도 참고
+                const avgRate = rates.reduce((a, b) => a + b, 0) / 4;
+                // 색상 결정
+                let color = '';
+                if (rates.every(r => r >= 0.9 && r <= 1.1)) color = 'bg-green-500'; // 진한 초록
+                else if (rates.every(r => r >= 0.7 && r <= 1.3)) color = 'bg-yellow-300'; // 연두/주황
+                else color = 'bg-red-400'; // 빨강
+                // 진하기 조절(달성률이 더 나쁘면 더 진한 빨강)
+                if (worst > 0.5) color = 'bg-red-600';
+                colorMap[ymd] = color;
+            });
+            setDateColorMap(colorMap);
         }
-        fetchMarkedDates();
+        fetchData();
     }, []);
 
     const saveToFirestore = async () => {
@@ -168,9 +224,7 @@ export default function NutritionTracker() {
                     customInput={<input readOnly className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition cursor-pointer" />}
                     dayClassName={date => {
                         const ymd = date.toISOString().split('T')[0];
-                        return markedDates.includes(ymd)
-                            ? 'bg-blue-100 text-blue-700 font-bold rounded-full'
-                            : '';
+                        return dateColorMap[ymd] || '';
                     }}
                 />
             </div>
