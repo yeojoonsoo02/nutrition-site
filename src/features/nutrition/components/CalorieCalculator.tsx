@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function CalorieCalculator() {
     const [gender, setGender] = useState<'male' | 'female'>('male');
@@ -38,6 +38,54 @@ export default function CalorieCalculator() {
         setResult({ bmr, tdee, carbs, protein, fat });
     };
 
+    // 커스텀 NumberPicker 컴포넌트
+    function NumberPicker({ value, setValue, min, max, step = 1, placeholder }: {
+        value: number;
+        setValue: (v: number) => void;
+        min: number;
+        max: number;
+        step?: number;
+        placeholder?: string;
+    }) {
+        const [open, setOpen] = useState(false);
+        const ref = useRef<HTMLDivElement>(null);
+        const numbers = [];
+        for (let i = min; i <= max; i += step) numbers.push(i);
+
+        useEffect(() => {
+            function handleClick(e: MouseEvent) {
+                if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+            }
+            if (open) document.addEventListener('mousedown', handleClick);
+            return () => document.removeEventListener('mousedown', handleClick);
+        }, [open]);
+
+        return (
+            <div className="relative" ref={ref}>
+                <button
+                    type="button"
+                    className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition text-left cursor-pointer select-none"
+                    onClick={() => setOpen((v) => !v)}
+                >
+                    {value ? value : <span className="text-gray-400">{placeholder}</span>}
+                </button>
+                {open && (
+                    <div className="absolute z-20 mt-2 w-full max-h-48 overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg animate-fade-in">
+                        {numbers.map((num) => (
+                            <div
+                                key={num}
+                                className={`px-4 py-2 hover:bg-blue-50 dark:hover:bg-blue-900 cursor-pointer ${value === num ? 'bg-primary text-white font-bold' : ''}`}
+                                onClick={() => { setValue(num); setOpen(false); }}
+                            >
+                                {num}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    }
+
     return (
         <div className="card text-left dark:text-white max-w-xl mx-auto">
             <h1 className="text-2xl font-bold mb-8 text-center">🔥 하루 섭취량 계산기</h1>
@@ -48,7 +96,10 @@ export default function CalorieCalculator() {
                     type="button"
                     onClick={() => setGender('male')}
                     className={`flex-1 py-3 rounded-xl border font-semibold text-lg transition-all
-                        ${gender === 'male' ? 'bg-primary text-white border-primary shadow' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-white border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900'}`}
+                        ${gender === 'male'
+                            ? 'bg-primary text-white border-primary shadow-lg translate-y-1 scale-95 ring-2 ring-primary/30'
+                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-white border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900'}
+                        focus:outline-none`}
                     aria-pressed={gender === 'male'}
                 >
                     👨 남성
@@ -57,7 +108,10 @@ export default function CalorieCalculator() {
                     type="button"
                     onClick={() => setGender('female')}
                     className={`flex-1 py-3 rounded-xl border font-semibold text-lg transition-all
-                        ${gender === 'female' ? 'bg-primary text-white border-primary shadow' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-white border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900'}`}
+                        ${gender === 'female'
+                            ? 'bg-primary text-white border-primary shadow-lg translate-y-1 scale-95 ring-2 ring-primary/30'
+                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-white border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900'}
+                        focus:outline-none`}
                     aria-pressed={gender === 'female'}
                 >
                     👩 여성
@@ -68,50 +122,42 @@ export default function CalorieCalculator() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                 <div>
                     <label className="block mb-2 font-semibold">나이 <span className="text-gray-400 text-sm">(만 나이)</span></label>
-                    <input
-                        type="number"
+                    <NumberPicker
                         value={age}
+                        setValue={setAge}
                         min={1}
                         max={120}
-                        onChange={(e) => setAge(Number(e.target.value))}
                         placeholder="예: 25"
-                        className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition"
                     />
                 </div>
                 <div>
                     <label className="block mb-2 font-semibold">키 <span className="text-gray-400 text-sm">(cm)</span></label>
-                    <input
-                        type="number"
+                    <NumberPicker
                         value={height}
+                        setValue={setHeight}
                         min={100}
                         max={250}
-                        onChange={(e) => setHeight(Number(e.target.value))}
                         placeholder="예: 170"
-                        className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition"
                     />
                 </div>
                 <div>
                     <label className="block mb-2 font-semibold">몸무게 <span className="text-gray-400 text-sm">(kg)</span></label>
-                    <input
-                        type="number"
+                    <NumberPicker
                         value={weight}
+                        setValue={setWeight}
                         min={20}
                         max={200}
-                        onChange={(e) => setWeight(Number(e.target.value))}
                         placeholder="예: 65"
-                        className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition"
                     />
                 </div>
                 <div>
                     <label className="block mb-2 font-semibold">주간 운동 횟수 <span className="text-gray-400 text-sm">(0~7회)</span></label>
-                    <input
-                        type="number"
+                    <NumberPicker
                         value={exercise}
+                        setValue={setExercise}
                         min={0}
                         max={7}
-                        onChange={(e) => setExercise(Number(e.target.value))}
                         placeholder="예: 3"
-                        className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition"
                     />
                 </div>
             </div>
