@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export default function CalorieCalculator() {
     const [gender, setGender] = useState<'male' | 'female'>('male');
@@ -36,6 +38,30 @@ export default function CalorieCalculator() {
         const carbs = (tdee - (protein * 4 + fat * 9)) / 4;
 
         setResult({ bmr, tdee, carbs, protein, fat });
+    };
+
+    // Firestore 저장 함수
+    const saveToFirestore = async () => {
+        if (!result) return;
+        const dateKey = new Date().toISOString().split('T')[0];
+        try {
+            await setDoc(doc(db, 'calorieRecords', dateKey), {
+                gender,
+                age,
+                height,
+                weight,
+                exercise,
+                bmr: result.bmr,
+                tdee: result.tdee,
+                carbs: result.carbs,
+                protein: result.protein,
+                fat: result.fat,
+                createdAt: new Date().toISOString(),
+            });
+            alert('✅ 하루 섭취량 계산 결과가 저장되었습니다!');
+        } catch (err) {
+            alert('❌ 저장 중 오류가 발생했습니다.');
+        }
     };
 
     // 커스텀 NumberPicker 컴포넌트
@@ -191,6 +217,7 @@ export default function CalorieCalculator() {
             </button>
 
             {result && (
+                <>
                 <div className="mt-8 card border-0 bg-blue-50 dark:bg-blue-950 text-blue-900 dark:text-blue-200">
                     <h2 className="text-lg font-semibold mb-4 text-center">🧮 결과</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-base">
@@ -201,6 +228,15 @@ export default function CalorieCalculator() {
                         <div className="flex items-center gap-2"><span className="text-2xl">🍚</span> <b>권장 탄수화물:</b> {result.carbs.toFixed(1)} g</div>
                     </div>
                 </div>
+                <div className="mt-4 text-center">
+                    <button
+                        onClick={saveToFirestore}
+                        className="px-6 py-3 bg-primary text-white font-bold rounded-xl shadow hover:bg-primary-hover transition text-lg"
+                    >
+                        💾 결과 저장
+                    </button>
+                </div>
+                </>
             )}
         </div>
     );
