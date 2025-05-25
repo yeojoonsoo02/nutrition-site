@@ -39,50 +39,52 @@ export default function CalorieCalculator() {
     };
 
     return (
-        <div className="text-left dark:text-white">
-            <h1 className="text-2xl font-bold mb-4">🔥 하루 섭취량 계산기</h1>
+        <div className="card text-left dark:text-white">
+            <h1 className="text-2xl font-bold mb-6">🔥 하루 섭취량 계산기</h1>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                    <label className="block mb-1 font-medium">성별</label>
-                    <select value={gender} onChange={(e) => setGender(e.target.value as 'male' | 'female')} className="w-full border rounded p-2">
+                    <label className="block mb-2 font-semibold">성별</label>
+                    <select value={gender} onChange={(e) => setGender(e.target.value as 'male' | 'female')} className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition">
                         <option value="male">남성</option>
                         <option value="female">여성</option>
                     </select>
                 </div>
                 <div>
-                    <label className="block mb-1 font-medium">나이</label>
-                    <input type="number" value={age} onChange={(e) => setAge(Number(e.target.value))} className="w-full border rounded p-2" />
+                    <label className="block mb-2 font-semibold">나이</label>
+                    <input type="number" value={age} onChange={(e) => setAge(Number(e.target.value))} className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition" />
                 </div>
                 <div>
-                    <label className="block mb-1 font-medium">키 (cm)</label>
-                    <input type="number" value={height} onChange={(e) => setHeight(Number(e.target.value))} className="w-full border rounded p-2" />
+                    <label className="block mb-2 font-semibold">키 (cm)</label>
+                    <input type="number" value={height} onChange={(e) => setHeight(Number(e.target.value))} className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition" />
                 </div>
                 <div>
-                    <label className="block mb-1 font-medium">몸무게 (kg)</label>
-                    <input type="number" value={weight} onChange={(e) => setWeight(Number(e.target.value))} className="w-full border rounded p-2" />
+                    <label className="block mb-2 font-semibold">몸무게 (kg)</label>
+                    <input type="number" value={weight} onChange={(e) => setWeight(Number(e.target.value))} className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition" />
                 </div>
                 <div className="col-span-2">
-                    <label className="block mb-1 font-medium">주간 운동 횟수</label>
-                    <input type="number" value={exercise} onChange={(e) => setExercise(Number(e.target.value))} className="w-full border rounded p-2" />
+                    <label className="block mb-2 font-semibold">주간 운동 횟수</label>
+                    <input type="number" value={exercise} onChange={(e) => setExercise(Number(e.target.value))} className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition" />
                 </div>
             </div>
 
             <button
                 onClick={handleCalculate}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                className="w-full py-3 bg-primary text-white font-bold rounded-xl shadow hover:bg-primary-hover transition"
             >
                 계산하기
             </button>
 
             {result && (
-                <div className="mt-6 border rounded p-4">
+                <div className="mt-8 card border-0 bg-blue-50 dark:bg-blue-950 text-blue-900 dark:text-blue-200">
                     <h2 className="text-lg font-semibold mb-2">🧮 결과</h2>
-                    <p><strong>기초대사량 (BMR):</strong> {result.bmr.toFixed(0)} kcal</p>
-                    <p><strong>총 소비 칼로리 (TDEE):</strong> {result.tdee.toFixed(0)} kcal</p>
-                    <p><strong>권장 단백질:</strong> {result.protein.toFixed(1)} g</p>
-                    <p><strong>권장 지방:</strong> {result.fat.toFixed(1)} g</p>
-                    <p><strong>권장 탄수화물:</strong> {result.carbs.toFixed(1)} g</p>
+                    <div className="flex flex-wrap gap-6 text-base">
+                        <span><b>기초대사량 (BMR):</b> {result.bmr.toFixed(0)} kcal</span>
+                        <span><b>총 소비 칼로리 (TDEE):</b> {result.tdee.toFixed(0)} kcal</span>
+                        <span><b>권장 단백질:</b> {result.protein.toFixed(1)} g</span>
+                        <span><b>권장 지방:</b> {result.fat.toFixed(1)} g</span>
+                        <span><b>권장 탄수화물:</b> {result.carbs.toFixed(1)} g</span>
+                    </div>
                 </div>
             )}
         </div>

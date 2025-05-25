@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f9fafb;
+  --foreground: #222;
+  --primary: #3182f6;
+  --primary-hover: #2563eb;
+  --border: #e5e7eb;
+  --card-bg: #fff;
+  --shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
 @theme inline {
@@ -14,13 +19,76 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #181c20;
     --foreground: #ededed;
+    --primary: #3182f6;
+    --primary-hover: #2563eb;
+    --border: #23272f;
+    --card-bg: #23272f;
+    --shadow: 0 2px 8px rgba(0,0,0,0.16);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Geist', 'Pretendard', Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+input, select, textarea {
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 12px 16px;
+  background: var(--card-bg);
+  color: var(--foreground);
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary);
+}
+
+button {
+  border-radius: 12px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow);
+}
+button:hover {
+  background: var(--primary-hover);
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 8px;
 }

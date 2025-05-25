@@ -139,44 +139,44 @@ export default function NutritionTracker() {
     };
 
     return (
-        <div className="text-left dark:text-white">
-            <div className="mb-4">
-                <label className="block mb-1 font-medium">날짜 선택</label>
+        <div className="card text-left dark:text-white">
+            <div className="mb-6">
+                <label className="block mb-2 font-semibold text-base">날짜 선택</label>
                 <DatePicker
                     selected={selectedDate}
                     onChange={(date) => {
                         if (date) setSelectedDate(date);
                     }}
                     dateFormat="yyyy-MM-dd"
-                    className="border rounded p-2 w-full dark:bg-gray-800 dark:text-white"
+                    className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition"
                 />
             </div>
 
             <FoodSearch onSelect={handleSelect} />
 
-            <ul>
+            <ul className="space-y-3">
                 {selectedFoods.map((item, idx) => (
-                    <li key={idx} className="mb-2 p-2 border rounded dark:border-gray-600 dark:bg-gray-800">
+                    <li key={idx} className="rounded-xl bg-white dark:bg-gray-900 shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3 flex flex-col gap-2">
                         <div className="flex justify-between items-start">
                             <div>
-                                <strong>{item.name}</strong> - {item.displayAmount}
-                                <div className="text-sm text-gray-500 dark:text-gray-300">
+                                <strong className="text-base">{item.name}</strong> <span className="text-gray-400 text-sm">{item.displayAmount}</span>
+                                <div className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                                     칼로리: {item.calories.toFixed(1)} kcal / 단백질: {item.protein.toFixed(1)}g / 지방: {item.fat.toFixed(1)}g / 탄수화물: {item.carbs.toFixed(1)}g
                                 </div>
                             </div>
                             <button
                                 onClick={() => handleDelete(idx)}
-                                className="text-red-500 text-sm hover:underline ml-4"
+                                className="text-gray-400 hover:text-red-500 text-lg ml-4 transition-colors"
                                 title="삭제"
                             >
-                                ❌
+                                ×
                             </button>
                         </div>
 
-                        <div className="flex items-center gap-2 mt-2 flex-wrap">
+                        <div className="flex items-center gap-2 flex-wrap">
                             <div className="flex items-center gap-1">
-                                <button onClick={() => handleQuantityChange(idx, -1)} className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 text-black dark:text-white">-1</button>
-                                <button onClick={() => handleQuantityChange(idx, -0.1)} className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 text-black dark:text-white">-0.1</button>
+                                <button onClick={() => handleQuantityChange(idx, -1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">-1</button>
+                                <button onClick={() => handleQuantityChange(idx, -0.1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">-0.1</button>
                             </div>
 
                             {editingIndex === idx ? (
@@ -190,11 +190,11 @@ export default function NutritionTracker() {
                                         if (e.key === 'Enter') handleEditSubmit(idx);
                                     }}
                                     autoFocus
-                                    className="w-16 px-2 py-1 border rounded text-center dark:bg-gray-700 dark:text-white appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                    className="w-20 px-2 py-1 border rounded-lg text-center dark:bg-gray-800 dark:text-white focus:border-blue-500 transition appearance-none"
                                 />
                             ) : (
                                 <span
-                                    className="w-14 text-center cursor-pointer border px-2 py-1 rounded bg-white dark:bg-gray-700 dark:text-white"
+                                    className="w-16 text-center cursor-pointer border px-2 py-1 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-white hover:bg-blue-50 dark:hover:bg-blue-900 transition"
                                     onClick={() => {
                                         setEditingIndex(idx);
                                         setEditValue(String(item.amount));
@@ -205,8 +205,8 @@ export default function NutritionTracker() {
                             )}
 
                             <div className="flex items-center gap-1">
-                                <button onClick={() => handleQuantityChange(idx, 0.1)} className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 text-black dark:text-white">+0.1</button>
-                                <button onClick={() => handleQuantityChange(idx, 1)} className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 text-black dark:text-white">+1</button>
+                                <button onClick={() => handleQuantityChange(idx, 0.1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">+0.1</button>
+                                <button onClick={() => handleQuantityChange(idx, 1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">+1</button>
                             </div>
                         </div>
                     </li>
@@ -214,20 +214,22 @@ export default function NutritionTracker() {
             </ul>
 
             {total && (
-                <div className="mt-4 border rounded p-4 text-left dark:border-gray-600 dark:bg-gray-800">
+                <div className="mt-8 card border-0 bg-blue-50 dark:bg-blue-950 text-blue-900 dark:text-blue-200">
                     <h3 className="text-lg font-bold mb-2">🍽 총 섭취 영양소</h3>
-                    <p>칼로리: {total.calories.toFixed(1)} kcal</p>
-                    <p>단백질: {total.protein.toFixed(1)} g</p>
-                    <p>지방: {total.fat.toFixed(1)} g</p>
-                    <p>탄수화물: {total.carbs.toFixed(1)} g</p>
+                    <div className="flex flex-wrap gap-6 text-base">
+                        <span>칼로리: <b>{total.calories.toFixed(1)}</b> kcal</span>
+                        <span>단백질: <b>{total.protein.toFixed(1)}</b> g</span>
+                        <span>지방: <b>{total.fat.toFixed(1)}</b> g</span>
+                        <span>탄수화물: <b>{total.carbs.toFixed(1)}</b> g</span>
+                    </div>
                 </div>
             )}
 
             {selectedFoods.length > 0 && (
-                <div className="mt-4 text-center">
+                <div className="mt-6 text-center">
                     <button
                         onClick={saveToFirestore}
-                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                        className="w-full py-3 bg-primary text-white font-bold rounded-xl shadow hover:bg-primary-hover transition"
                     >
                         💾 이 날의 기록 저장
                     </button>
