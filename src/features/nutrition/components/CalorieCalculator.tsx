@@ -49,8 +49,20 @@ export default function CalorieCalculator() {
     }) {
         const [open, setOpen] = useState(false);
         const ref = useRef<HTMLDivElement>(null);
-        const numbers = [];
+        const listRef = useRef<HTMLDivElement>(null);
+        const numbers: number[] = [];
         for (let i = min; i <= max; i += step) numbers.push(i);
+
+        // open 시 선택된 값이 중앙에 오도록 스크롤
+        useEffect(() => {
+            if (open && listRef.current) {
+                const idx = numbers.indexOf(value);
+                if (idx !== -1) {
+                    const itemHeight = 40; // px, 아래 스타일에서 py-2(8px) + px-4 + font 등 고려
+                    listRef.current.scrollTop = Math.max(0, itemHeight * idx - (listRef.current.clientHeight / 2) + (itemHeight / 2));
+                }
+            }
+        }, [open, value, numbers]);
 
         useEffect(() => {
             function handleClick(e: MouseEvent) {
@@ -64,17 +76,26 @@ export default function CalorieCalculator() {
             <div className="relative" ref={ref}>
                 <button
                     type="button"
-                    className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition text-left cursor-pointer select-none"
+                    className={`w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition text-left cursor-pointer select-none ${open ? 'ring-2 ring-primary/40' : ''}`}
                     onClick={() => setOpen((v) => !v)}
                 >
                     {value ? value : <span className="text-gray-400">{placeholder}</span>}
                 </button>
                 {open && (
-                    <div className="absolute z-20 mt-2 w-full max-h-48 overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg animate-fade-in">
+                    <div
+                        ref={listRef}
+                        className="absolute z-20 mt-2 w-full max-h-48 overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg animate-fade-in"
+                        style={{scrollBehavior: 'smooth'}}
+                    >
                         {numbers.map((num) => (
                             <div
                                 key={num}
-                                className={`px-4 py-2 hover:bg-blue-50 dark:hover:bg-blue-900 cursor-pointer ${value === num ? 'bg-primary text-white font-bold' : ''}`}
+                                className={`px-4 py-2 cursor-pointer select-none text-center text-lg transition
+                                    ${value === num
+                                        ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-black font-bold'
+                                        : 'hover:bg-gray-200 dark:hover:bg-gray-800 hover:text-black dark:hover:text-white'}
+                                `}
+                                style={{minHeight: 40}}
                                 onClick={() => { setValue(num); setOpen(false); }}
                             >
                                 {num}
