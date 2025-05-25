@@ -35,6 +35,7 @@ export default function NutritionTracker() {
     } | null>(null);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [isSaved, setIsSaved] = useState(false);
+    const [viewOnly, setViewOnly] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -142,20 +143,32 @@ export default function NutritionTracker() {
 
     return (
         <div className="card text-left dark:text-white">
+            <div className="flex justify-end mb-4">
+                <button
+                    className={`px-4 py-2 rounded-lg font-semibold border transition text-sm ${viewOnly ? 'bg-primary text-white border-primary' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-white border-gray-300 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900'}`}
+                    onClick={() => setViewOnly(v => !v)}
+                >
+                    {viewOnly ? '편집 모드로' : '정보만 보기'}
+                </button>
+            </div>
             <div className="mb-6">
                 <label className="block mb-2 font-semibold text-base">날짜 선택</label>
                 <DatePicker
                     selected={selectedDate}
                     onChange={(date) => {
-                        if (!isSaved && date) setSelectedDate(date);
+                        if (!isSaved && !viewOnly && date) setSelectedDate(date);
                     }}
                     dateFormat="yyyy-MM-dd"
-                    className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition"
-                    disabled={isSaved}
+                    className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition cursor-pointer"
+                    disabled={isSaved || viewOnly}
+                    calendarClassName="rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-2"
+                    popperClassName="z-30"
+                    showPopperArrow={false}
+                    customInput={<input readOnly className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition cursor-pointer" />}
                 />
             </div>
 
-            {!isSaved && <FoodSearch onSelect={handleSelect} />}
+            {!isSaved && !viewOnly && <FoodSearch onSelect={handleSelect} />}
 
             <ul className="space-y-3">
                 {selectedFoods.map((item, idx) => (
@@ -167,22 +180,19 @@ export default function NutritionTracker() {
                                     칼로리: {item.calories.toFixed(1)} kcal / 단백질: {item.protein.toFixed(1)}g / 지방: {item.fat.toFixed(1)}g / 탄수화물: {item.carbs.toFixed(1)}g
                                 </div>
                             </div>
-                            <button
-                                onClick={() => handleDelete(idx)}
-                                className="text-gray-400 hover:text-red-500 text-lg ml-4 transition-colors"
-                                title="삭제"
-                            >
-                                ×
-                            </button>
+                            {!viewOnly && (
+                                <button
+                                    onClick={() => handleDelete(idx)}
+                                    className="text-gray-400 hover:text-red-500 text-lg ml-4 transition-colors"
+                                    title="삭제"
+                                >
+                                    ×
+                                </button>
+                            )}
                         </div>
 
                         <div className="flex items-center gap-2 flex-wrap">
-                            <div className="flex items-center gap-1">
-                                <button onClick={() => handleQuantityChange(idx, -1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">-1</button>
-                                <button onClick={() => handleQuantityChange(idx, -0.1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">-0.1</button>
-                            </div>
-
-                            {editingIndex === idx && !isSaved ? (
+                            {editingIndex === idx && !isSaved && !viewOnly ? (
                                 <>
                                     <input
                                         type="number"
@@ -195,6 +205,7 @@ export default function NutritionTracker() {
                                         }}
                                         className="w-20 px-2 py-1 border rounded-lg text-center dark:bg-gray-800 dark:text-white focus:border-blue-500 transition appearance-none"
                                         autoFocus
+                                        style={{ MozAppearance: 'textfield' }}
                                     />
                                     <button
                                         className="px-3 py-1 bg-primary text-white rounded-lg font-semibold hover:bg-primary-hover transition"
@@ -212,17 +223,12 @@ export default function NutritionTracker() {
                             ) : (
                                 <span
                                     className="w-16 text-center cursor-pointer border px-2 py-1 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-white hover:bg-blue-50 dark:hover:bg-blue-900 transition"
-                                    onClick={() => { if (!isSaved) { setEditingIndex(idx); setEditValue(String(item.amount)); } }}
-                                    style={{ pointerEvents: isSaved ? 'none' : 'auto' }}
+                                    onClick={() => { if (!isSaved && !viewOnly) { setEditingIndex(idx); setEditValue(String(item.amount)); } }}
+                                    style={{ pointerEvents: isSaved || viewOnly ? 'none' : 'auto' }}
                                 >
                                     {item.amount}
                                 </span>
                             )}
-
-                            <div className="flex items-center gap-1">
-                                <button onClick={() => handleQuantityChange(idx, 0.1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">+0.1</button>
-                                <button onClick={() => handleQuantityChange(idx, 1)} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">+1</button>
-                            </div>
                         </div>
                     </li>
                 ))}
@@ -240,7 +246,7 @@ export default function NutritionTracker() {
                 </div>
             )}
 
-            {!isSaved && selectedFoods.length > 0 && (
+            {!isSaved && !viewOnly && selectedFoods.length > 0 && (
                 <div className="mt-6 text-center">
                     <button
                         onClick={saveToFirestore}
