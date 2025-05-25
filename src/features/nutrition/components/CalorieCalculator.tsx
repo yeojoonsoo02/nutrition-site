@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 export default function CalorieCalculator() {
@@ -44,9 +44,8 @@ export default function CalorieCalculator() {
     // Firestore 저장 함수
     const saveToFirestore = async () => {
         if (!result) return;
-        const dateKey = new Date().toISOString().split('T')[0];
         try {
-            await setDoc(doc(db, 'calorieRecords', dateKey), {
+            await setDoc(doc(db, 'calorieRecords', 'latest'), {
                 gender,
                 age,
                 height,
@@ -64,6 +63,30 @@ export default function CalorieCalculator() {
             alert('❌ 저장 중 오류가 발생했습니다.');
         }
     };
+
+    // Firestore에서 오늘 날짜의 데이터 불러오기
+    useEffect(() => {
+        async function fetchCalorieRecord() {
+            const docRef = doc(db, 'calorieRecords', 'latest');
+            const snapshot = await getDoc(docRef);
+            if (snapshot.exists()) {
+                const data = snapshot.data();
+                setGender(data.gender);
+                setAge(data.age);
+                setHeight(data.height);
+                setWeight(data.weight);
+                setExercise(data.exercise);
+                setResult({
+                    bmr: data.bmr,
+                    tdee: data.tdee,
+                    carbs: data.carbs,
+                    protein: data.protein,
+                    fat: data.fat,
+                });
+            }
+        }
+        fetchCalorieRecord();
+    }, []);
 
     // 커스텀 NumberPicker 컴포넌트
     function NumberPicker({ value, setValue, min, max, step = 1, placeholder }: {
