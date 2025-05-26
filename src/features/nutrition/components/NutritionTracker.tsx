@@ -23,6 +23,12 @@ function getDisplayAmount(unit: string, amount: number): string {
     return unit === '100g' ? `${amount * 100}g` : `${amount}개`;
 }
 
+// KST(한국시간) 기준 날짜키 생성 함수
+function getKSTDateKey(date: Date) {
+    const kst = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+    return kst.toISOString().split('T')[0];
+}
+
 export default function NutritionTracker() {
     const [selectedFoods, setSelectedFoods] = useState<SelectedFood[]>([]);
     const [total, setTotal] = useState<{
@@ -38,7 +44,7 @@ export default function NutritionTracker() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const dateKey = selectedDate.toISOString().split('T')[0];
+            const dateKey = getKSTDateKey(selectedDate);
             const docRef = doc(db, 'records', dateKey);
             const snapshot = await getDoc(docRef);
 
@@ -114,7 +120,7 @@ export default function NutritionTracker() {
     }, []);
 
     const saveToFirestore = async () => {
-        const dateKey = selectedDate.toISOString().split('T')[0];
+        const dateKey = getKSTDateKey(selectedDate);
         try {
             await setDoc(doc(db, 'records', dateKey), {
                 foods: selectedFoods,
@@ -197,7 +203,7 @@ export default function NutritionTracker() {
                     showPopperArrow={false}
                     customInput={<input readOnly className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition cursor-pointer" />}
                     dayClassName={date => {
-                        const ymd = date.toISOString().split('T')[0];
+                        const ymd = getKSTDateKey(date);
                         return dateColorMap[ymd] || '';
                     }}
                 />
