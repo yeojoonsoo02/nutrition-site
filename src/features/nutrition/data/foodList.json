@@ -134,5 +134,61 @@
     "fat": 4,
     "carbs": 60,
     "unit": "100g"
+  },
+  {
+    "name": "고추장 숯불구이",
+    "calories": 270,
+    "protein": 22,
+    "fat": 15,
+    "carbs": 10,
+    "unit": "100g"
+  },
+  {
+    "name": "두부",
+    "calories": 97,
+    "protein": 9.62,
+    "fat": 4.63,
+    "carbs": 3.75,
+    "unit": "100g"
+  },
+  {
+    "name": "고구마",
+    "calories": 128,
+    "protein": 1.72,
+    "fat": 0.15,
+    "carbs": 30.36,
+    "unit": "100g"
+  },
+  {
+    "name": "구운계란",
+    "calories": 98,
+    "protein": 8.3,
+    "fat": 6.6,
+    "carbs": 0.5,
+    "unit": "1개"
+  },
+  {
+    "name": "닭가슴살",
+    "calories": 165,
+    "protein": 31,
+    "fat": 3.6,
+    "carbs": 0,
+    "unit": "100g"
+  },
+  {
+    "name": "바나나",
+    "calories": 111.6,
+    "protein": 1.44,
+    "fat": 0.36,
+    "carbs": 26.4,
+    "unit": "1개"
+  },
+  {
+    "name": "감자",
+    "calories": 77,
+    "protein": 2.01,
+    "fat": 0.11,
+    "carbs": 17.44,
+    "unit": "100g"
   }
 ]
