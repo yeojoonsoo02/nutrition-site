@@ -35,11 +35,11 @@ export default function CalorieCalculator() {
         const tdee = bmr * activityMap[Math.min(exercise, 4)];
 
         // 운동량에 따라 단백질 배수 결정
-        let proteinFactor = 1.2;
-        if (exercise >= 6) proteinFactor = 2.2;
-        else if (exercise >= 4) proteinFactor = 2.0;
-        else if (exercise >= 2) proteinFactor = 1.6;
-        // 0~1은 1.2
+        let proteinFactor = 1.0;
+        if (exercise >= 6) proteinFactor = 2.0;
+        else if (exercise >= 4) proteinFactor = 1.8;
+        else if (exercise >= 2) proteinFactor = 1.4;
+        // 0~1은 1.0
         const protein = proteinFactor * weight;
         const fat = (tdee * 0.25) / 9;
         const carbs = (tdee - (protein * 4 + fat * 9)) / 4;

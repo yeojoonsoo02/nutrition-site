@@ -99,27 +99,13 @@ export default function NutritionTracker() {
                     return;
                 }
                 const total = data.total || {};
-                // 각 영양소별 달성률(%)
-                const rates = [
-                    total.calories && rec.calories ? total.calories / rec.calories : 0,
-                    total.protein && rec.protein ? total.protein / rec.protein : 0,
-                    total.fat && rec.fat ? total.fat / rec.fat : 0,
-                    total.carbs && rec.carbs ? total.carbs / rec.carbs : 0,
-                ];
-                // 가장 벗어난(나쁜) 달성률을 기준으로 색상 결정
-                const worst = Math.max(
-                    Math.abs(1 - rates[0]),
-                    Math.abs(1 - rates[1]),
-                    Math.abs(1 - rates[2]),
-                    Math.abs(1 - rates[3])
-                );
-                // 색상 결정
+                // 단백질 달성률만 기준으로 색상 결정
+                const proteinRate = total.protein && rec.protein ? total.protein / rec.protein : 0;
                 let color = '';
-                if (rates.every(r => r >= 0.9 && r <= 1.1)) color = 'bg-green-500'; // 진한 초록
-                else if (rates.every(r => r >= 0.7 && r <= 1.3)) color = 'bg-yellow-300'; // 연두/주황
-                else color = 'bg-red-400'; // 빨강
-                // 진하기 조절(달성률이 더 나쁘면 더 진한 빨강)
-                if (worst > 0.5) color = 'bg-red-600';
+                if (proteinRate >= 0.9 && proteinRate <= 1.1) color = 'bg-green-500';
+                else if (proteinRate >= 0.7 && proteinRate <= 1.3) color = 'bg-yellow-300';
+                else color = 'bg-red-400';
+                if (Math.abs(1 - proteinRate) > 0.5) color = 'bg-red-600';
                 colorMap[ymd] = color;
             });
             setDateColorMap(colorMap);
