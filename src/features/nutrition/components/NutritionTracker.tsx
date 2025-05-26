@@ -201,11 +201,11 @@ export default function NutritionTracker() {
                 <DatePicker
                     selected={selectedDate}
                     onChange={(date) => {
-                        if (!isSaved && !viewOnly && date) setSelectedDate(date);
+                        if (date) setSelectedDate(date);
                     }}
                     dateFormat="yyyy-MM-dd"
                     className="w-full border rounded-xl p-3 bg-white dark:bg-gray-800 dark:text-white focus:border-blue-500 transition cursor-pointer"
-                    disabled={isSaved || viewOnly}
+                    disabled={false}
                     calendarClassName="rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-2"
                     popperClassName="z-30"
                     showPopperArrow={false}
