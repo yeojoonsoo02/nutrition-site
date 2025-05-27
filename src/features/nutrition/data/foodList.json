@@ -111,7 +111,7 @@
     "carbs": 42.4,
     "unit": "1개"
   },
-    {
+  {
     "name": "맘스터치 싸이플렉스버거",
     "calories": 1063,
     "protein": 52,
@@ -190,5 +190,29 @@
     "fat": 0.11,
     "carbs": 17.44,
     "unit": "100g"
+  },
+  {
+    "name": "우유",
+    "calories": 66,
+    "protein": 3.3,
+    "fat": 3.6,
+    "carbs": 4.8,
+    "unit": "100g"
+  },
+  {
+    "name": "롯데리아 감자튀김",
+    "calories": 312,
+    "protein": 3.8,
+    "fat": 16.2,
+    "carbs": 37.8,
+    "unit": "100g"
+  },
+  {
+    "name": "롯데리아 더블사각새우버거",
+    "calories": 608,
+    "protein": 19,
+    "fat": 33,
+    "carbs": 58,
+    "unit": "1개"
   }
 ]
